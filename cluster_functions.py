@@ -3,78 +3,105 @@ import shutil
 import sys
 
 def ls_clusters(host_name, filters=None):
-    # Local ls command
-    local_command = ["ls"]
-    if filters:
-        local_command.append(filters)
-    local_output = subprocess.check_output(local_command)
-    print("Local host - Files and directories:")
-    print(local_output.decode())
+    try:
+        # Local ls command
+        local_command = ["ls"]
+        if filters:
+            local_command.append(filters)
+        local_output = subprocess.check_output(local_command).decode().splitlines()
 
-    # Remote SSH ls command
-    remote_command = ["ssh", host_name, "ls"]
-    if filters:
-        remote_command.append(filters)
-    remote_output = subprocess.check_output(remote_command)
-    print(f"{host_name} - Files and directories:")
-    print(remote_output.decode())
+        # Remote SSH ls command
+        remote_command = ["ssh", host_name, "ls"]
+        if filters:
+            remote_command.append(filters)
+        remote_output = subprocess.check_output(remote_command).decode().splitlines()
+
+        # Compare file lists
+        if local_output == remote_output:
+            print("Files are the same:")
+            print('\n'.join(local_output))
+        else:
+            print("Error: Files are not equal!")
+    except subprocess.CalledProcessError as e:
+        print("An error occurred:", str(e))
 
 
 def copy_file(host_name, source_path, destination_path):
-    # Local copy
-    shutil.copy(source_path, destination_path)
-
-    # Remote copy using SCP
     try:
-        subprocess.run(['scp', source_path, f'{host_name}:{destination_path}'], check=True)
-        print("File copied to the remote machine.")
-    except subprocess.CalledProcessError as e:
-        print("An error occurred:", str(e))
+        # Local copy
+        shutil.copy(source_path, destination_path)
+        print("File copied locally.")
+
+        # Remote copy using SCP
+        try:
+            subprocess.run(['scp', source_path, f'{host_name}:{destination_path}'], check=True)
+            print("File copied to the remote machine.")
+        except subprocess.CalledProcessError as e:
+            print("An error occurred during remote copy:", str(e))
+            # Undo the local copy if an error occurs on remote copy
+            os.remove(destination_path)
+            print("Local copy undone due to remote copy error.")
+    except IOError as e:
+        print("An error occurred during local copy:", str(e))
 
 
 def move_file(host_name, source_path, destination_path):
-    # Local move
-    shutil.move(source_path, destination_path)
-
-    # Remote move using mv
     try:
-        subprocess.run(['ssh', host_name, 'mv', source_path, destination_path], check=True)
-        print("File moved to the remote machine.")
-    except subprocess.CalledProcessError as e:
-        print("An error occurred:", str(e))
+        # Local move
+        shutil.move(source_path, destination_path)
+        print("File moved locally.")
+
+        # Remote move using SCP
+        try:
+            subprocess.run(['ssh', host_name, f'mv {source_path} {destination_path}'], check=True)
+            print("File moved to the remote machine.")
+        except subprocess.CalledProcessError as e:
+            print("An error occurred during remote move:", str(e))
+            # Undo the local move if an error occurs on remote move
+            shutil.move(destination_path, source_path)
+            print("Local move undone due to remote move error.")
+    except FileNotFoundError as e:
+        print("An error occurred during local move:", str(e))
 
 
 
 def change_file_permissions(host_name, file_name, permissions_list):
-    # Local execution
     try:
+        # Local change of file permissions
         subprocess.run(['chmod', permissions_list, file_name], check=True)
         print("File permissions changed locally.")
-    except subprocess.CalledProcessError as e:
-        print("An error occurred during local execution:", str(e))
 
-    # Remote execution using SSH
-    try:
-        subprocess.run(['ssh', host_name, f'chmod {permissions_list} {file_name}'], check=True)
-        print("File permissions changed on the remote machine.")
+        # Remote change of file permissions using SSH
+        try:
+            subprocess.run(['ssh', host_name, f'chmod {permissions_list} {file_name}'], check=True)
+            print("File permissions changed on the remote machine.")
+        except subprocess.CalledProcessError as e:
+            print("An error occurred during remote change of file permissions:", str(e))
+            # Undo the local change of file permissions if an error occurs on remote change
+            subprocess.run(['chmod', permissions_list, file_name], check=True)
+            print("Local change of file permissions undone due to remote change error.")
     except subprocess.CalledProcessError as e:
-        print("An error occurred during remote execution:", str(e))
+        print("An error occurred during local change of file permissions:", str(e))
 
 
 def create_user(host_name, username):
-    # Local user creation
     try:
+        # Local user creation
         subprocess.run(['sudo', 'useradd', username], check=True)
         print("User created locally.")
+
+        # Remote user creation using SSH
+        try:
+            subprocess.run(['ssh', host_name, f'sudo useradd {username}'], check=True)
+            print("User created on the remote machine.")
+        except subprocess.CalledProcessError as e:
+            print("An error occurred during remote user creation:", str(e))
+            # Undo the local user creation if an error occurs on remote user creation
+            subprocess.run(['sudo', 'userdel', '-r', username], check=True)
+            print("Local user creation undone due to remote user creation error.")
     except subprocess.CalledProcessError as e:
         print("An error occurred during local user creation:", str(e))
 
-    # Remote user creation using SSH
-    try:
-        subprocess.run(['ssh', host_name, f'sudo useradd {username}'], check=True)
-        print("User created on the remote machine.")
-    except subprocess.CalledProcessError as e:
-        print("An error occurred during remote user creation:", str(e))
 
 def help():
     commands = {
