@@ -8,9 +8,11 @@ def ls_clusters(host_name, filters=None):
         local_command = ["ls"]
         if filters:
             local_command.append(filters)
+        os.chdir('/so/Desafio3SO')
         local_output = subprocess.check_output(local_command).decode().splitlines()
 
         # Remote SSH ls command
+        subprocess.run(['ssh', 'remote_host', 'cd /so/Desafio3SO'], check=True)
         remote_command = ["ssh", host_name, "ls"]
         if filters:
             remote_command.append(filters)
@@ -29,16 +31,19 @@ def ls_clusters(host_name, filters=None):
 def copy_file(host_name, source_path, destination_path):
     try:
         # Local copy
+        os.chdir('/so/Desafio3SO')
         shutil.copy(source_path, destination_path)
         print("File copied locally.")
 
         # Remote copy using SCP
         try:
+            subprocess.run(['ssh', 'remote_host', 'cd /so/Desafio3SO'], check=True)
             subprocess.run(['scp', source_path, f'{host_name}:{destination_path}'], check=True)
             print("File copied to the remote machine.")
         except subprocess.CalledProcessError as e:
             print("An error occurred during remote copy:", str(e))
             # Undo the local copy if an error occurs on remote copy
+            os.chdir('/so/Desafio3SO')
             os.remove(destination_path)
             print("Local copy undone due to remote copy error.")
     except IOError as e:
@@ -48,16 +53,19 @@ def copy_file(host_name, source_path, destination_path):
 def move_file(host_name, source_path, destination_path):
     try:
         # Local move
+        os.chdir('/so/Desafio3SO')
         shutil.move(source_path, destination_path)
         print("File moved locally.")
 
         # Remote move using SCP
         try:
+            subprocess.run(['ssh', 'remote_host', 'cd /so/Desafio3SO'], check=True)
             subprocess.run(['ssh', host_name, f'mv {source_path} {destination_path}'], check=True)
             print("File moved to the remote machine.")
         except subprocess.CalledProcessError as e:
             print("An error occurred during remote move:", str(e))
             # Undo the local move if an error occurs on remote move
+            subprocess.run(['ssh', 'remote_host', 'cd /so/Desafio3SO'], check=True)
             shutil.move(destination_path, source_path)
             print("Local move undone due to remote move error.")
     except FileNotFoundError as e:
@@ -68,16 +76,19 @@ def move_file(host_name, source_path, destination_path):
 def change_file_permissions(host_name, file_name, permissions_list):
     try:
         # Local change of file permissions
+        os.chdir('/so/Desafio3SO')
         subprocess.run(['chmod', permissions_list, file_name], check=True)
         print("File permissions changed locally.")
 
         # Remote change of file permissions using SSH
         try:
+            subprocess.run(['ssh', 'remote_host', 'cd /so/Desafio3SO'], check=True)
             subprocess.run(['ssh', host_name, f'chmod {permissions_list} {file_name}'], check=True)
             print("File permissions changed on the remote machine.")
         except subprocess.CalledProcessError as e:
             print("An error occurred during remote change of file permissions:", str(e))
             # Undo the local change of file permissions if an error occurs on remote change
+            os.chdir('/so/Desafio3SO')
             subprocess.run(['chmod', permissions_list, file_name], check=True)
             print("Local change of file permissions undone due to remote change error.")
     except subprocess.CalledProcessError as e:
