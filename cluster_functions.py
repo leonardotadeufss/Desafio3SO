@@ -59,7 +59,7 @@ def move_file(host_name, source_path, destination_path):
 
         # Remote move using SCP
         try:
-            subprocess.run(['ssh', host_name, f'mv {source_path} /home/so/Desafio3SO/{destination_path}'], check=True)
+            subprocess.run(['ssh', host_name, f'mv /home/so/Desafio3SO/{source_path} /home/so/Desafio3SO/{destination_path}'], check=True)
             print("File moved to the remote machine.")
         except subprocess.CalledProcessError as e:
             print("An error occurred during remote move:", str(e))
