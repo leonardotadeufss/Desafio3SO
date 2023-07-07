@@ -9,7 +9,7 @@ def ls_clusters(host_name, filters=None):
         local_command = ["ls"]
         if filters:
             local_command.append(filters)
-        os.chdir('home/so/Desafio3SO')
+        os.chdir('/home/so/Desafio3SO')
         local_output = subprocess.check_output(local_command).decode().splitlines()
 
         # Remote SSH ls command
