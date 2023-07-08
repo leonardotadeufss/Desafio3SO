@@ -163,12 +163,13 @@ def main():
     elif function_name == "copy_file":
         source_path = args[0]
         destination_path = args[1]
-        copy_file(host_name,source_path, destination_path)
+        copy_file(host_name,source_path, destination_path, file_name)
 
     elif function_name == "move_file":
         source_path = args[0]
         destination_path = args[1]
-        move_file(host_name,source_path, destination_path)
+        file_name = args[2]
+        move_file(host_name,source_path, destination_path, file_name)
 
     elif function_name == "change_file_permissions":
         file_name = args[0]
