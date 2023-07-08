@@ -75,25 +75,23 @@ def move_file(host_name, source_path, destination_path, filename):
 
 
 
-def change_file_permissions(host_name, file_name, permissions_list):
+def create_group(host_name, group_name):
     try:
-        # Local change of file permissions
-        os.chdir('/home/so/Desafio3SO')
-        subprocess.run(['chmod', permissions_list, file_name], check=True)
-        print("File permissions changed locally.")
+        # Local group creation
+        subprocess.run(['sudo', 'groupadd', group_name], check=True)
+        print("Group created locally.")
 
-        # Remote change of file permissions using SSH
+        # Remote group creation using SSH
         try:
-            subprocess.run(['ssh', host_name, f'chmod {permissions_list} /home/so/Desafio3SO/{file_name}'], check=True)
-            print("File permissions changed on the remote machine.")
+            subprocess.run(['ssh', host_name, f'sudo groupadd {group_name}'], check=True)
+            print("Group created on the remote machine.")
         except subprocess.CalledProcessError as e:
-            print("An error occurred during remote change of file permissions:", str(e))
-            # Undo the local change of file permissions if an error occurs on remote change
-            os.chdir('/home/so/Desafio3SO')
-            subprocess.run(['chmod', permissions_list, file_name], check=True)
-            print("Local change of file permissions undone due to remote change error.")
+            print("An error occurred during remote group creation:", str(e))
+            # Undo the local group creation if an error occurs on remote group creation
+            subprocess.run(['sudo', 'groupdel', group_name], check=True)
+            print("Local group creation undone due to remote group creation error.")
     except subprocess.CalledProcessError as e:
-        print("An error occurred during local change of file permissions:", str(e))
+        print("An error occurred during local group creation:", str(e))
 
 
 def create_user(host_name, username):
@@ -125,9 +123,9 @@ def help():
         '[host_name] copy_file': ('Copy a file locally from source path to destination path and do the same on a remote node.',
                       '[source_path]', '[destination_path] [filename]'),
         '[host_name] move_file': ('Move a file locally  from source path to destination path and do the same on a remote node.',
-                      '[source_path]', '[destination_path] [filename]'),
-        '[host_name] change_file_permissions': ('Change the permissions of a file on a local and remote node.',
-                                    '[file_name]', '[permissions_list]'),
+                      '[source_path]', '[destination_path] [filename]'),      
+        '[host_name] create_group': ('Create a new group locally and on a remote node.',
+                        '[groupname]'),
         '[host_name] create_user': ('Create a new user locally and on a remote node.',
                         '[username]'),
         '[host_name] ls': ('List files and directories in a given path.','[filters]')
@@ -172,10 +170,10 @@ def main():
         file_name = args[2]
         move_file(host_name,source_path, destination_path, file_name)
 
-    elif function_name == "change_file_permissions":
-        file_name = args[0]
-        permissions_list = args[1:]
-        change_file_permissions(host_name, file_name, permissions_list)
+    elif function_name == "create_group":
+        groupname = args[0]
+        create_user(host_name,groupname)
+        
     elif function_name == "create_user":
         username = args[0]
         create_user(host_name,username)
