@@ -39,7 +39,7 @@ def copy_file(host_name, source_path, destination_path, filename):
 
         # Remote copy using SSH
         try:
-            subprocess.run(['ssh', host_name, f'cp /home/so/Desafio3SO/{destination_file} /home/so/Desafio3SO/{source_file}'], check=True)
+            subprocess.run(['ssh', host_name, f'cp /home/so/Desafio3SO/{source_file} /home/so/Desafio3SO/{destination_path}'], check=True)
             print("File copied on the remote machine.")
         except subprocess.CalledProcessError as e:
             print("An error occurred during remote copy:", str(e))
@@ -61,7 +61,7 @@ def move_file(host_name, source_path, destination_path, filename):
 
         # Remote move using SSH
         try:
-            subprocess.run(['ssh', host_name, f'mv /home/so/Desafio3SO/{destination_file} /home/so/Desafio3SO/{source_file}'], check=True)
+            subprocess.run(['ssh', host_name, f'mv /home/so/Desafio3SO/{source_file} /home/so/Desafio3SO/{destination_path}'], check=True)
             print("File moved on the remote machine.")
         except subprocess.CalledProcessError as e:
             print("An error occurred during remote move:", str(e))
@@ -163,6 +163,7 @@ def main():
     elif function_name == "copy_file":
         source_path = args[0]
         destination_path = args[1]
+        file_name = args[2]
         copy_file(host_name,source_path, destination_path, file_name)
 
     elif function_name == "move_file":
@@ -173,7 +174,7 @@ def main():
 
     elif function_name == "create_group":
         groupname = args[0]
-        create_user(host_name,groupname)
+        create_group(host_name,groupname)
 
     elif function_name == "create_user":
         username = args[0]
