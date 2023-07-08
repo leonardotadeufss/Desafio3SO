@@ -140,7 +140,6 @@ def help():
     return
 
 def main():
-    print(sys.argv)
     command = sys.argv[1:]
     if not check_actual_path():
         print("Invalid directory, go to path '/home/so/Desafio3SO' to run this command.")
