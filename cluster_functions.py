@@ -138,10 +138,11 @@ def help():
         parameters_string = ' '.join(parameters)
         print(f"cluster {command} {parameters_string}: {description}")
     print()
+    return
 
 def main():
     command = sys.argv[1:]
-    if len(command) == 0 :
+    if len(command) < 2 :
         print('Use "cluster help" to see all available commands')
         return
     if command[0] == "help":
@@ -173,7 +174,7 @@ def main():
     elif function_name == "create_group":
         groupname = args[0]
         create_user(host_name,groupname)
-        
+
     elif function_name == "create_user":
         username = args[0]
         create_user(host_name,username)
