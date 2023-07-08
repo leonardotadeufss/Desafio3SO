@@ -122,13 +122,13 @@ def check_actual_path():
 
 def help():
     commands = {
-        '[host_name] copy_file': ('Copy a file locally from source path to destination path and do the same on a remote machine.',
-                      '[source_path]', '[destination_path]'),
-        '[host_name] move_file': ('Move a file locally  from source path to destination path and do the same on a remote machine.',
-                      '[source_path]', '[destination_path]'),
-        '[host_name] change_file_permissions': ('Change the permissions of a file on a local and remote machine.',
+        '[host_name] copy_file': ('Copy a file locally from source path to destination path and do the same on a remote node.',
+                      '[source_path]', '[destination_path] [filename]'),
+        '[host_name] move_file': ('Move a file locally  from source path to destination path and do the same on a remote node.',
+                      '[source_path]', '[destination_path] [filename]'),
+        '[host_name] change_file_permissions': ('Change the permissions of a file on a local and remote node.',
                                     '[file_name]', '[permissions_list]'),
-        '[host_name] create_user': ('Create a new user locally and on a remote machine.',
+        '[host_name] create_user': ('Create a new user locally and on a remote node.',
                         '[username]'),
         '[host_name] ls': ('List files and directories in a given path.','[filters]')
     }
