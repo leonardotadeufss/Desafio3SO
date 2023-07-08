@@ -142,14 +142,14 @@ def help():
 
 def main():
     command = sys.argv[1:]
-    if len(command) < 2 :
-        print('Use "cluster help" to see all available commands')
+    if not check_actual_path():
+        print("Invalid directory, go to path '/home/so/Desafio3SO' to run this command.")
         return
     if command[0] == "help":
         help()
         return
-    if not check_actual_path():
-        print("Invalid directory, go to path '/home/so/Desafio3SO' to run this command.")
+    if len(command) < 2 :
+        print('Use "cluster help" to see all available commands')
         return
     
     host_name = command[0]
