@@ -39,7 +39,7 @@ def copy_file(host_name, source_path, destination_path, filename):
 
         # Remote copy using SSH
         try:
-            subprocess.run(['ssh', host_name, f'cp {destination_file} {source_file}'], check=True)
+            subprocess.run(['ssh', host_name, f'cp /home/so/Desafio3SO/{destination_file} /home/so/Desafio3SO/{source_file}'], check=True)
             print("File copied on the remote machine.")
         except subprocess.CalledProcessError as e:
             print("An error occurred during remote copy:", str(e))
@@ -61,7 +61,7 @@ def move_file(host_name, source_path, destination_path, filename):
 
         # Remote move using SSH
         try:
-            subprocess.run(['ssh', host_name, f'mv {destination_file} {source_file}'], check=True)
+            subprocess.run(['ssh', host_name, f'mv /home/so/Desafio3SO/{destination_file} /home/so/Desafio3SO/{source_file}'], check=True)
             print("File moved on the remote machine.")
         except subprocess.CalledProcessError as e:
             print("An error occurred during remote move:", str(e))
@@ -148,6 +148,7 @@ def main():
         return
     if command[0] == "help":
         help()
+        return
     if not check_actual_path():
         print("Invalid directory, go to path '/home/so/Desafio3SO' to run this command.")
         return
