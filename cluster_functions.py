@@ -113,10 +113,9 @@ def create_user(host_name, username):
         print("An error occurred during local user creation:", str(e))
 
 def check_actual_path():
-    expected_path = '/home/so/Desafio3SO'
-    current_path = os.getcwd()
+    current_path = os.path.abspath(sys.argv[0])
+    return 'Desafio3SO' in current_path
 
-    return expected_path in os.path.abspath(current_path)
 
 def help():
     commands = {
@@ -141,16 +140,18 @@ def help():
     return
 
 def main():
+    print(sys.argv)
     command = sys.argv[1:]
     if not check_actual_path():
         print("Invalid directory, go to path '/home/so/Desafio3SO' to run this command.")
         return
+    if len(command) == 0 :
+        print('Use "cluster help" to see all available commands')
+        return
     if command[0] == "help":
         help()
         return
-    if len(command) < 2 :
-        print('Use "cluster help" to see all available commands')
-        return
+
     
     host_name = command[0]
     function_name = command[1]
@@ -183,3 +184,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    
